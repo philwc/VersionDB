@@ -1,0 +1,9 @@
+database:
+  user: 
+  password:
+  host:
+  database:
+  changelogtable: changelog
+
+file:
+  sqlDir:
