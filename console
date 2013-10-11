@@ -1,10 +1,5 @@
 #!/usr/bin/env php
 <?php
-$loader = require __DIR__ . '/vendor/autoload.php';
-$loader->add('philwc', __DIR__ . '/src');
-
-use Symfony\Component\Console\Application;
-
-$app = new Application();
+$app = new \Symfony\Component\Console\Application();
 $app->add(new \philwc\Command\UpdateCommand());
 $app->run();
