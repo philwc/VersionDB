@@ -1,5 +1,5 @@
-#!/usr/bin/env php
 <?php
+
 $app = new \Symfony\Component\Console\Application();
 $app->add(new \philwc\Command\UpdateCommand());
 $app->run();
