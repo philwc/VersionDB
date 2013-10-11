@@ -1,31 +1,40 @@
-##VersionDB
+#VersionDB
 
-To Use:
+##To Use:
 
-1. Add to your composer.json:
+* Add to your composer.json:
 
-     "require": {
-       "philwc/VersionDB": "dev-master"
-     }
+```
+"require": {
+     "philwc/VersionDB": "dev-master"
+}
+```
 
-2. Run 
+* Run 
     
-    composer.phar update
 
-3. Add a settings.yml file:
+```
+composer.phar update
+```
 
-    database:
-      user: <DBUSER>
-      password: <DBPASS>
-      host: <DBHOST>
-      database: <DBNAME>
-      changelogtable: changelog
-    file:
-      sqlDir: <LOCATION OF SQL FILES>
+* Add a settings.yml file:
 
-4. Add an entry point (i.e. console)
+```
+database:
+  user: <DBUSER>
+  password: <DBPASS>
+  host: <DBHOST>
+  database: <DBNAME>
+  changelogtable: changelog
+file:
+  sqlDir: <LOCATION OF SQL FILES>
+```
 
-    #!/usr/bin/env php
-    <?php
-    require __DIR__ . '/vendor/autoload.php';
-    require __DIR__ . '/vendor/philwc/VersionDB/console';
+* Add an entry point (i.e. console)
+
+```php
+#!/usr/bin/env php
+<?php
+require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/vendor/philwc/VersionDB/console';
+```
