@@ -24,7 +24,10 @@ class UpdateCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $filesystemUpdates = new \philwc\Classes\FilesystemUpdates(__DIR__ . '/../sql');
+        $config = new \philwc\Classes\Config();
+        $sqlDir = $config->getSetting('file', 'sqlDir');
+
+        $filesystemUpdates = new \philwc\Classes\FilesystemUpdates($sqlDir);
         $changes           = $filesystemUpdates->get();
 
         $dbUpdates = new \philwc\Classes\DBUpdates();
