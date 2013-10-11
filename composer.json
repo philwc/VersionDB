@@ -1,5 +1,5 @@
 {
-    "name": "philwc/VersionDB",
+    "name": "philwc/version-db",
     "require": {
         "symfony/console": "v2.3.5",
         "symfony/finder": "v2.3.5",
