@@ -1,6 +1,5 @@
 <?php
 
-var_dump($_POST);
 if(isset($_POST['submit'])){
     $up = $_POST['up'];
     $user = $_POST['user'];
@@ -17,15 +16,10 @@ if(isset($_POST['submit'])){
 
 
 EOF;
-    
    
     $up = $header. $up;
-    var_dump(sha1($up));
-    var_dump($up);
-    
     file_put_contents('sql/'.sha1($up).'.sql', $up);
     echo 'Saved';
-
 }else{
     echo <<< EOF
         <form action="" method="POST">
