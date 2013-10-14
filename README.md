@@ -6,7 +6,7 @@
 
 ```
 "require": {
-     "philwc/VersionDB": "dev-master"
+     "philwc/version-db": "dev-master"
 }
 ```
 
