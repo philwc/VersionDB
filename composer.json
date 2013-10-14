@@ -1,5 +1,16 @@
 {
     "name": "philwc/version-db",
+    "description": "Easy database versioning :)",
+    "keywords": ["database","db", "versioning"],
+    "homepage": "https://github.com/philwc/VersionDB",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Phil Wright- Christie",
+            "email": "philwc@gmail.com",
+            "role": "Developer"
+        }
+    ],
     "require": {
         "symfony/console": "v2.3.5",
         "symfony/finder": "v2.3.5",
