@@ -28,7 +28,7 @@ class DB
         $this->host     = $config->getSetting('database', 'host');
         $this->user     = $config->getSetting('database', 'user');
         $this->password = $config->getSetting('database', 'password');
-        $this->db       = $config->getSetting('database', 'database');
+        $this->db       = $config->getSetting('database', 'name');
 
         $this->params = array();
         $this->connect();

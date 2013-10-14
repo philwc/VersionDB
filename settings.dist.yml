@@ -3,7 +3,7 @@ parameters:
       user: 
       password:
       host:
-      database:
+      name:
       changelogtable: changelog
 
     file:

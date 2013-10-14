@@ -25,7 +25,7 @@ parameters:
       user: <DBUSER>
       password: <DBPASS>
       host: <DBHOST>
-      database: <DBNAME>
+      name: <DBNAME>
       changelogtable: changelog
     file:
       sqlDir: <LOCATION OF SQL FILES>
