@@ -19,7 +19,7 @@ class DowngradeCommand extends Command
     {
         $this
             ->setName('downgrade')
-            ->setDescription('Analyse SQL files, compare to the database changelog and apply any new scripts');
+            ->setDescription('Read the changelog table and downgrade to specified record.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -46,29 +46,64 @@ class DowngradeCommand extends Command
 
         $dialog = $this->getHelperSet()->get('dialog');
 
-        $downgradeRecord = $dialog->ask(
+        $downgradeRecordId = $dialog->ask(
             $output, '<question>Please select a record to downgrade to:</question> ', ''
         );
 
-        while (!is_numeric($downgradeRecord)) {
+        while (!is_numeric($downgradeRecordId)) {
             $output->writeln('Please enter a number!');
-            $downgradeRecord = $dialog->ask(
+            $downgradeRecordId = $dialog->ask(
                 $output, '<question>Please select a record to downgrade to:</question> ', ''
             );
         }
 
-        //check record exists;
-
-
         $confirm = $dialog->ask(
             $output,
-            '<question>Are you sure you want to downgrade to record ' . $downgradeRecord . '? (y/n)</question> ',
+            '<question>Are you sure you want to downgrade to record ' . $downgradeRecordId . '? (y/n)</question> ',
             ''
         );
 
         if (in_array(strtolower($confirm), array('y', 'yes'))) {
-            //do stuff
-            var_dump($changes);
+
+            //We should remove all records after the one specified.
+            $downgradeRecordId++;
+
+            //check record exists;
+            $downgradeRecord = '';
+            foreach ($existingHashes as $existingHash) {
+                if ($existingHash['record'] == $downgradeRecordId) {
+                    $downgradeRecord = $existingHash;
+                    break;
+                }
+            }
+
+            if ($downgradeRecord == '') {
+                $output->writeln('Invalid Record ID or unable to downgrade to specified record.');
+                exit();
+            }
+
+            /* var_dump($downgradeRecord);
+
+              var_dump($changes); */
+
+            $downgradeDate = new \DateTime($downgradeRecord['date']);
+
+            foreach ($changes as $hash => $details) {
+                if ($details['date'] >= $downgradeDate) {
+                    //run script
+                    $details['file'] = $filesystemUpdates->getFile($hash);
+
+                    $result = $dbUpdates->applyScript($hash, true, $details);
+
+                    if ($result === true) {
+                        $result = 'Removed Successfully';
+                    } elseif ($result === false) {
+                        $result = 'Failed Adding';
+                    }
+
+                    $output->writeln($result);
+                }
+            }
         }
 
 

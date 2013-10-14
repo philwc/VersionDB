@@ -84,8 +84,26 @@ class DBUpdates
     }
 
     /**
+     * Remove Record
+     * @param type $hash
+     * @return type
+     */
+    private function removeRecord($hash)
+    {
+        $this->db
+            ->setSql('DELETE FROM ' . $this->changelogTable . ' WHERE id=:hash OR down=:hash')
+            ->setParameter(
+                array(
+                    'hash' => $hash
+        ));
+
+        return $this->db->run() !== false;
+    }
+
+    /**
      * Apply Script
      * @param string $hash
+     * @param string $down
      * @param array  $details
      *
      * @return boolean
@@ -98,8 +116,13 @@ class DBUpdates
         $result = $this->db->setSql($sql)->run();
 
         if ($result !== false) {
-            return $this->addRecord($hash, $down, $details['date'], $details['author'],
-                    $details['description']);
+            if ($down === true) {
+                return $this->removeRecord($hash);
+            } else {
+                return $this
+                        ->addRecord(
+                            $hash, $down, $details['date'], $details['author'], $details['description']);
+            }
         } else {
             throw new \Exception('Failed applying update script: ' . "\n" . $details['file'] . "\n\n" . $sql . "\n\n" . $this->db->getLastError());
         }
