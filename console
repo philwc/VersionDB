@@ -1,5 +1,7 @@
 <?php
 
 $app = new \Symfony\Component\Console\Application();
-$app->add(new \philwc\Command\UpdateCommand());
+$app->add(new \philwc\Command\UpgradeCommand());
+$app->add(new \philwc\Command\DowngradeCommand());
+$app->add(new \philwc\Command\AddChangeCommand());
 $app->run();

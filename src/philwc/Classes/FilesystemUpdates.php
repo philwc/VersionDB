@@ -13,26 +13,75 @@ class FilesystemUpdates
 {
 
     private $sqlDir;
+    private $up;
 
     /**
      * Constructor
      * @param string $sqlDir The directory to scan for SQL files
+     * @param string $upDown Update or downgrade script
      */
-    public function __construct($sqlDir)
+    public function __construct($sqlDir, $up = true)
     {
         $this->sqlDir = $sqlDir;
+        $this->up     = $up;
+    }
+
+    /**
+     * Add Files
+     * @param string $up
+     * @param string $down
+     * @param string $author
+     * @param string $description
+     *
+     * @throws Exception
+     */
+    public function addFiles($up, $down, $author, $description)
+    {
+        $today      = new \DateTime();
+        $downHeader = <<< EOF
+/**
+ * This is an automatically generated file. Please do not edit.
+ * @date {$today->format('Y-m-d H:i:s')}
+ * @author $author
+ * @description $description
+ */
+
+EOF;
+        $down       = $downHeader . $down;
+        $downHash   = sha1($down);
+        $downName   = $this->sqlDir . '/' . $downHash . '.down.sql';
+        if (!file_put_contents($downName, $down)) {
+            throw new Exception('Unable to write file ' . $downName);
+        }
+
+        $upHeader = <<< EOF
+/**
+ * This is an automatically generated file. Please do not edit.
+ * @date {$today->format('Y-m-d H:i:s')}
+ * @author $author
+ * @description $description
+ * @down $downHash
+ */
+
+EOF;
+
+        $up     = $upHeader . $up;
+        $upName = $this->sqlDir . '/' . sha1($up) . '.up.sql';
+        if (!file_put_contents($upName, $up)) {
+            throw new Exception('Unable to write file ' . $upName);
+        }
     }
 
     /**
      * Get File
      * @param string $hash
-     * 
+     *
      * @return string
      * @throws \Exception
      */
     public function getFile($hash)
     {
-        $path = realpath($this->sqlDir . '/' . $hash . '.sql');
+        $path = realpath($this->sqlDir . '/' . $hash . '.' . $this->getUpDownString() . '.sql');
         if (file_exists($path)) {
             return $path;
         } else {
@@ -61,12 +110,17 @@ class FilesystemUpdates
             $changes[$hash] = $this->processFile($file);
         }
 
-        return $this->sortChanges($changes);
+        return $this->sortChanges($changes, $this->up);
     }
 
     private function getHash($file)
     {
-        return str_replace('.sql', '', $file->getFilename());
+        return str_replace(array('.up.sql', '.down.sql'), '', $file->getFilename());
+    }
+
+    private function getUpDownString()
+    {
+        return $this->up ? 'up' : 'down';
     }
 
     private function compareHash($file)
@@ -93,25 +147,46 @@ class FilesystemUpdates
 
         $iterator = $finder
             ->files()
-            ->name('*.sql')
+            ->name('*.' . $this->getUpDownString() . '.sql')
             ->in($sqlDir);
 
         return $iterator;
     }
 
-    private function sortChanges($changes)
+    /**
+     * Sort Changes
+     * @param array   $changes
+     * @param boolean $ascending
+     *
+     * @return array
+     */
+    private function sortChanges(array $changes, $ascending = true)
     {
-        uasort($changes,
-            function($a, $b) {
-                $ad = $a['date'];
-                $bd = $b['date'];
+        if ($ascending) {
+            uasort($changes,
+                function($a, $b) {
+                    $ad = $a['date'];
+                    $bd = $b['date'];
 
-                if ($ad == $bd) {
-                    return 0;
-                }
+                    if ($ad == $bd) {
+                        return 0;
+                    }
 
-                return $ad > $bd ? 1 : -1;
-            });
+                    return $ad > $bd ? 1 : -1;
+                });
+        } else {
+            uasort($changes,
+                function($a, $b) {
+                    $ad = $a['date'];
+                    $bd = $b['date'];
+
+                    if ($ad == $bd) {
+                        return 0;
+                    }
+
+                    return $ad < $bd ? 1 : -1;
+                });
+        }
 
         return $changes;
     }
@@ -130,25 +205,32 @@ class FilesystemUpdates
             }
 
             $line = trim(str_replace('*', '', $line));
-            /**
-             * Extract the data
-             * @todo make this a bit smarter
-             */
-            switch (substr($line, 0, strpos($line, ' '))) {
-                case '@date':
-                    $change['date']        = new \DateTime(trim(str_replace('@date', '', $line)));
-                    break;
-                case '@author':
-                    $change['author']      = trim(str_replace('@author', '', $line));
-                    break;
-                case '@description':
-                    $change['description'] = trim(str_replace('@description', '', $line));
-                    break;
-                default;
-            }
+
+            $change = array_merge($change, $this->extractTag($line));
         }
 
         return $change;
+    }
+
+    private function extractTag($line)
+    {
+        if (substr($line, 0, 1) === '@') {
+            $tagPos = strpos($line, ' ') - 1;
+            $tag    = substr($line, 1, $tagPos);
+            $data   = trim(substr($line, $tagPos + 1));
+
+            if (strpos($tag, 'date') !== false) {
+                try {
+                    $data = new \DateTime($data);
+                } catch (Exception $e) {
+
+                }
+            }
+
+            return array($tag => $data);
+        }
+
+        return array();
     }
 
 }

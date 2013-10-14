@@ -12,13 +12,13 @@ use philwc\Classes;
  *
  * @author Philip Wright- Christie <philwc@gmail.com>
  */
-class UpdateCommand extends Command
+class UpgradeCommand extends Command
 {
 
     protected function configure()
     {
         $this
-            ->setName('update')
+            ->setName('upgrade')
             ->setDescription('Analyse SQL files, compare to the database changelog and apply any new scripts');
     }
 
@@ -46,7 +46,7 @@ class UpdateCommand extends Command
 
                 $details['file'] = $filesystemUpdates->getFile($hash);
 
-                $result = $dbUpdates->applyScript($hash, $details);
+                $result = $dbUpdates->applyScript($hash, $details['down'], $details);
 
                 if ($result === true) {
                     $result = 'Added Successfully';

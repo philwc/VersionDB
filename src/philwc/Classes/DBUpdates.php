@@ -36,7 +36,7 @@ class DBUpdates
         $this->db->setSql('SELECT 1 FROM ' . $this->changelogTable . ' LIMIT 1');
 
         if ($this->db->run() === false) {
-            $this->db->setSql('CREATE TABLE `' . $this->changelogTable . '` (`id` varchar(255) DEFAULT NULL, `date` datetime DEFAULT NULL,
+            $this->db->setSql('CREATE TABLE `' . $this->changelogTable . '` (`id` varchar(255) DEFAULT NULL, `down` varchar(255) DEFAULT NULL, `date` datetime DEFAULT NULL,
                 `author` varchar(255) DEFAULT NULL, `description` text, PRIMARY KEY (id)) ENGINE=InnoDB DEFAULT CHARSET=latin1');
 
             return $this->db->run() !== false;
@@ -48,13 +48,14 @@ class DBUpdates
     /**
      * Add Change Record
      * @param string    $hash
+     * @param string    $down
      * @param \DateTime $date
      * @param string    $author
      * @param string    $description
      *
      * @return boolean
      */
-    private function addRecord($hash, \DateTime $date, $author, $description)
+    private function addRecord($hash, $down, \DateTime $date, $author, $description)
     {
         $result = $this->db
             ->setSql('SELECT id FROM ' . $this->changelogTable . ' WHERE id=:hash')
@@ -67,9 +68,10 @@ class DBUpdates
 
         if ($result->rowCount() == 0) {
             $this->db
-                ->setSql('INSERT INTO ' . $this->changelogTable . ' VALUES (:hash, :date, :author, :description)')
+                ->setSql('INSERT INTO ' . $this->changelogTable . ' VALUES (:hash, :down, :date, :author, :description)')
                 ->setParameter(array(
                     'hash'        => $hash,
+                    'down'        => $down,
                     'date'        => $date->format('Y-m-d H:i:s'),
                     'author'      => $author,
                     'description' => $description,
@@ -89,16 +91,17 @@ class DBUpdates
      * @return boolean
      * @throws \Exception
      */
-    public function applyScript($hash, array $details)
+    public function applyScript($hash, $down, array $details)
     {
         $sql = file_get_contents($details['file']);
 
         $result = $this->db->setSql($sql)->run();
 
         if ($result !== false) {
-            return $this->addRecord($hash, $details['date'], $details['author'], $details['description']);
+            return $this->addRecord($hash, $down, $details['date'], $details['author'],
+                    $details['description']);
         } else {
-            throw new \Exception('Failed applying update script: ' . "\n" . $details['file'] . "\n\n" . $this->db->getLastError());
+            throw new \Exception('Failed applying update script: ' . "\n" . $details['file'] . "\n\n" . $sql . "\n\n" . $this->db->getLastError());
         }
     }
 
@@ -106,15 +109,33 @@ class DBUpdates
      * Get Existing Hashes
      * @return array
      */
-    public function getExistingHashes()
+    public function getExistingHashes($small = true)
     {
-        $result = $this->db
-            ->setSql('SELECT id FROM ' . $this->changelogTable)
-            ->run();
+        if ($small) {
+            $result = $this->db
+                ->setSql('SELECT id FROM ' . $this->changelogTable)
+                ->run();
 
-        $hashes = array();
-        while ($row    = $result->fetch()) {
-            $hashes[] = $row['id'];
+            $hashes = array();
+            while ($row    = $result->fetch()) {
+                $hashes[] = $row['id'];
+            }
+        } else {
+            $result = $this->db
+                ->setSql('SELECT * FROM ' . $this->changelogTable)
+                ->run();
+
+            $hashes = array();
+            $i      = 1;
+            while ($row    = $result->fetch()) {
+                $hash = array();
+                foreach ($row as $key => $value) {
+                    $hash[$key] = $value;
+                }
+
+                $hashes[] = array_merge(array('record' => $i), $hash);
+                $i++;
+            }
         }
 
         return $hashes;
