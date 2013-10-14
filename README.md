@@ -1,6 +1,6 @@
 #VersionDB
 
-##To Use:
+##To Install:
 
 * Add to your composer.json:
 
@@ -30,7 +30,7 @@ file:
   sqlDir: <LOCATION OF SQL FILES>
 ```
 
-* Add an entry point (i.e. console)
+* Create a new file in the project root called console, with the following contents: 
 
 ```php
 #!/usr/bin/env php
@@ -38,3 +38,30 @@ file:
 require __DIR__ . '/vendor/autoload.php';
 require __DIR__ . '/vendor/philwc/VersionDB/console';
 ```
+
+##To Use:
+
+* Add A Revision:
+
+```
+php console add
+```
+
+You will be prompted to fill in the required fields
+
+* Upgrade Database:
+
+```
+php console upgrade
+```
+
+This will read the SQL Dir (From settings.yml) and apply the update SQL scripts in date order
+
+* Downgrade Database:
+
+```
+php console downgrade
+```
+
+This will read the changelog table and allow you to select where to downgrade to. 
+It will then apply the downgrade SQL scripts in date descending order until it hits the record specified.
