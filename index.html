@@ -1,50 +1,118 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8">
+    <meta charset='utf-8'>
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>Versiondb by philwc</title>
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script src="javascripts/respond.js"></script>
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
     <!--[if lt IE 9]>
-      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    <!--[if lt IE 8]>
-    <link rel="stylesheet" href="stylesheets/ie.css">
-    <![endif]-->
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-
+    <title>Versiondb by philwc</title>
   </head>
+
   <body>
-      <div id="header">
-        <nav>
-          <li class="fork"><a href="https://github.com/philwc/VersionDB">View On GitHub</a></li>
-          <li class="downloads"><a href="https://github.com/philwc/VersionDB/zipball/master">ZIP</a></li>
-          <li class="downloads"><a href="https://github.com/philwc/VersionDB/tarball/master">TAR</a></li>
-          <li class="title">DOWNLOADS</li>
-        </nav>
-      </div><!-- end header -->
+    <div id="container">
+      <div class="inner">
 
-    <div class="wrapper">
-
-      <section>
-        <div id="title">
+        <header>
           <h1>Versiondb</h1>
-          <p></p>
-          <hr>
-          <span class="credits left">Project maintained by <a href="https://github.com/philwc">philwc</a></span>
-          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></span>
-        </div>
+          <h2>Easy database versioning :)</h2>
+        </header>
 
-        <p>philwc -- Version DB</p>
+        <section id="downloads" class="clearfix">
+          <a href="https://github.com/philwc/VersionDB/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/philwc/VersionDB/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/philwc/VersionDB" id="view-on-github" class="button"><span>View on GitHub</span></a>
+        </section>
 
-<p>This is a WIP project, trying to come up with a way to easily version database schemas</p>
-      </section>
+        <hr>
 
+        <section id="main_content">
+          <h1>
+<a name="versiondb" class="anchor" href="#versiondb"><span class="octicon octicon-link"></span></a>VersionDB</h1>
+
+<h2>
+<a name="to-install" class="anchor" href="#to-install"><span class="octicon octicon-link"></span></a>To Install:</h2>
+
+<ul>
+<li>Add to your composer.json:</li>
+</ul><pre><code>"require": {
+     "philwc/version-db": "dev-master"
+}
+</code></pre>
+
+<ul>
+<li>Run </li>
+</ul><pre><code>composer.phar update
+</code></pre>
+
+<ul>
+<li>Add a settings.yml file:</li>
+</ul><pre><code>parameters:
+    database:
+      user: &lt;DBUSER&gt;
+      password: &lt;DBPASS&gt;
+      host: &lt;DBHOST&gt;
+      name: &lt;DBNAME&gt;
+      changelogtable: changelog
+    file:
+      sqlDir: &lt;LOCATION OF SQL FILES&gt;
+</code></pre>
+
+<ul>
+<li>Create a new file in the project root called console, with the following contents: </li>
+</ul><div class="highlight highlight-php"><pre><span class="c1">#!/usr/bin/env php</span>
+<span class="o">&lt;?</span><span class="nx">php</span>
+<span class="k">require</span> <span class="nx">__DIR__</span> <span class="o">.</span> <span class="s1">'/vendor/autoload.php'</span><span class="p">;</span>
+<span class="k">require</span> <span class="nx">__DIR__</span> <span class="o">.</span> <span class="s1">'/vendor/philwc/version-db/console'</span><span class="p">;</span>
+</pre></div>
+
+<h2>
+<a name="to-use" class="anchor" href="#to-use"><span class="octicon octicon-link"></span></a>To Use:</h2>
+
+<ul>
+<li>Add A Revision:</li>
+</ul><pre><code>php console add
+</code></pre>
+
+<p>You will be prompted to fill in the required fields</p>
+
+<ul>
+<li>Upgrade Database:</li>
+</ul><pre><code>php console upgrade
+</code></pre>
+
+<p>This will read the SQL Dir (From settings.yml) and apply the update SQL scripts in date order</p>
+
+<ul>
+<li>Downgrade Database:</li>
+</ul><pre><code>php console downgrade
+</code></pre>
+
+<p>This will read the changelog table and allow you to select where to downgrade to. 
+It will then apply the downgrade SQL scripts in date descending order until it hits the record specified.</p>
+        </section>
+
+        <footer>
+          Versiondb is maintained by <a href="https://github.com/philwc">philwc</a><br>
+          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
+
+                  <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-44855343-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+      </div>
     </div>
-    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
-    
   </body>
 </html>
