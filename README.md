@@ -36,7 +36,7 @@ file:
 #!/usr/bin/env php
 <?php
 require __DIR__ . '/vendor/autoload.php';
-require __DIR__ . '/vendor/philwc/VersionDB/console';
+require __DIR__ . '/vendor/philwc/version-db/console';
 ```
 
 ##To Use:
