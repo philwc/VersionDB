@@ -1,9 +1,10 @@
-database:
-  user: 
-  password:
-  host:
-  database:
-  changelogtable: changelog
+parameters:
+    database:
+      user: 
+      password:
+      host:
+      database:
+      changelogtable: changelog
 
-file:
-  sqlDir:
+    file:
+      sqlDir:

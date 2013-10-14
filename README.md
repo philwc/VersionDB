@@ -20,14 +20,15 @@ composer.phar update
 * Add a settings.yml file:
 
 ```
-database:
-  user: <DBUSER>
-  password: <DBPASS>
-  host: <DBHOST>
-  database: <DBNAME>
-  changelogtable: changelog
-file:
-  sqlDir: <LOCATION OF SQL FILES>
+parameters:
+    database:
+      user: <DBUSER>
+      password: <DBPASS>
+      host: <DBHOST>
+      database: <DBNAME>
+      changelogtable: changelog
+    file:
+      sqlDir: <LOCATION OF SQL FILES>
 ```
 
 * Create a new file in the project root called console, with the following contents: 

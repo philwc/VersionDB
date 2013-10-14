@@ -35,7 +35,12 @@ class Config
     private function loadSettings()
     {
         $settingsFilename = $this->findSettings();
-        $this->data       = Yaml::parse(file_get_contents($settingsFilename));
+        $data             = Yaml::parse(file_get_contents($settingsFilename));
+        if (isset($data['parameters'])) {
+            $this->data = $data['parameters'];
+        } else {
+            throw new \Exception('Invalid Settings Format!');
+        }
     }
 
     /**
