@@ -66,7 +66,7 @@ class DBUpdates
             )
             ->run();
 
-        if ($result->rowCount() == 0) {
+        if ($result === false || $result->rowCount() == 0) {
             $this->db
                 ->setSql('INSERT INTO ' . $this->changelogTable . ' VALUES (:hash, :down, :date, :author, :description)')
                 ->setParameter(array(
