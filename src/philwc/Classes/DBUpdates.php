@@ -86,6 +86,7 @@ class DBUpdates
     /**
      * Remove Record
      * @param type $hash
+     *
      * @return type
      */
     private function removeRecord($hash)
@@ -130,6 +131,9 @@ class DBUpdates
 
     /**
      * Get Existing Hashes
+     *
+     * @param boolean $small
+     *
      * @return array
      */
     public function getExistingHashes($small = true)
