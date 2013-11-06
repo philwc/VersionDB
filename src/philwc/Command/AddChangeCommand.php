@@ -18,7 +18,7 @@ class AddChangeCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('add')
+            ->setName('vdb:add')
             ->setDescription('Add a new change to the repository');
     }
 

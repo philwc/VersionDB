@@ -18,7 +18,7 @@ class DowngradeCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('downgrade')
+            ->setName('vdb:downgrade')
             ->setDescription('Read the changelog table and downgrade to specified record.');
     }
 

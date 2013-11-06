@@ -18,7 +18,7 @@ class UpgradeCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('upgrade')
+            ->setName('vdb:upgrade')
             ->setDescription('Analyse SQL files, compare to the database changelog and apply any new scripts');
     }
 
