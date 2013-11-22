@@ -66,3 +66,7 @@ php console downgrade
 
 This will read the changelog table and allow you to select where to downgrade to. 
 It will then apply the downgrade SQL scripts in date descending order until it hits the record specified.
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/philwc/versiondb/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
