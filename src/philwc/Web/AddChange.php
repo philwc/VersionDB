@@ -62,11 +62,18 @@ class AddChange {
         return $this;
     }
 
+    /**
+     * Get Fields
+     *
+     * @return array
+     */
     public function getFields(){
         return array_keys(get_object_vars($this));
     }
 
     /**
+     * Commit
+     *
      * @throws \Exception
      */
     public function commit(){
