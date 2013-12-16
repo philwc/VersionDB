@@ -63,7 +63,7 @@ class DB
                 $this->pdo = new \PDO($dsn, $this->user, $this->password);
                 $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
             } catch (\PDOException $e) {
-                throw new Exception('Database Connect Error! ' . $e->getMessage());
+                throw new \Exception('Database Connect Error! ' . $e->getMessage());
             }
         }
 
