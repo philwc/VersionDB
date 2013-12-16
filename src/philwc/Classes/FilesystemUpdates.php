@@ -51,7 +51,7 @@ EOF;
         $downHash   = sha1($down);
         $downName   = $this->sqlDir . '/' . $downHash . '.down.sql';
         if (!file_put_contents($downName, $down)) {
-            throw new Exception('Unable to write file ' . $downName);
+            throw new \Exception('Unable to write file ' . $downName);
         }
 
         $upHeader = <<< EOF
@@ -68,7 +68,7 @@ EOF;
         $up     = $upHeader . $up;
         $upName = $this->sqlDir . '/' . sha1($up) . '.up.sql';
         if (!file_put_contents($upName, $up)) {
-            throw new Exception('Unable to write file ' . $upName);
+            throw new \Exception('Unable to write file ' . $upName);
         }
     }
 
@@ -222,7 +222,7 @@ EOF;
             if (strpos($tag, 'date') !== false) {
                 try {
                     $data = new \DateTime($data);
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
 
                 }
             }
