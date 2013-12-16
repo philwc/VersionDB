@@ -13,7 +13,7 @@
 * Run
 
 
-```
+```bash
 composer.phar update
 ```
 
@@ -44,7 +44,7 @@ require __DIR__ . '/vendor/philwc/version-db/console';
 
 * Add A Revision:
 
-```
+```bash
 php console add
 ```
 
@@ -52,7 +52,7 @@ You will be prompted to fill in the required fields
 
 * Upgrade Database:
 
-```
+```bash
 php console upgrade
 ```
 
@@ -60,7 +60,7 @@ This will read the SQL Dir (From settings.yml) and apply the update SQL scripts 
 
 * Downgrade Database:
 
-```
+```bash
 php console downgrade
 ```
 
@@ -72,14 +72,14 @@ It will then apply the downgrade SQL scripts in date descending order until it h
 
 There is an example file ([a relative link](index.php)) for how to use the front end. The fields may be rendered by the class, using
 
-```
+```php
 $change = new \philwc\Web\AddChange();
 $change->getHtml($action);
 ```
 
 or by rendering manually, i.e.
 
-```
+```php
 $change = new \philwc\Web\AddChange();
 $html   = '<form id="vdbAdd" method="POST">';
 foreach ($change->getFields() as $field) {
