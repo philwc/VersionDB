@@ -70,7 +70,7 @@ It will then apply the downgrade SQL scripts in date descending order until it h
 
 * Web Front End:
 
-There is an example file ([a relative link](index.php)) for how to use the front end. The fields may be rendered by the class, using
+There is an example file ([index.php](index.php)) for how to use the front end. The fields may be rendered by the class, using
 
 ```php
 $change = new \philwc\Web\AddChange();
