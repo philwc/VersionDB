@@ -17,12 +17,11 @@ class UpgradeCommand extends Command
 
     protected function configure()
     {
-        $this
-            ->setName('vdb:upgrade')
-            ->setDescription('Analyse SQL files, compare to the database changelog and apply any new scripts');
+        $this->setName('vdb:upgrade')
+             ->setDescription('Analyse SQL files, compare to the database changelog and apply any new scripts');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute( InputInterface $input, OutputInterface $output )
     {
         $config = new \philwc\Classes\Config();
         $sqlDir = $config->getSetting('file', 'sqlDir');
@@ -46,7 +45,11 @@ class UpgradeCommand extends Command
 
                 $details['file'] = $filesystemUpdates->getFile($hash);
 
-                $result = $dbUpdates->applyScript($hash, $details['down'], $details);
+                try {
+                    $result = $dbUpdates->applyScript($hash, $details['down'], $details);
+                } catch (\Exception $e) {
+                    $output->writeln('<error>' . $e->getMessage() . '</error>');
+                }
 
                 if ($result === true) {
                     $result = 'Added Successfully';
