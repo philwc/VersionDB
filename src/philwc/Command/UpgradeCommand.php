@@ -44,7 +44,8 @@ class UpgradeCommand extends Command
                 $output->write("Processing $hash [{$details['author']}] [{$details['description']}]... ");
 
                 $details['file'] = $filesystemUpdates->getFile($hash);
-
+                
+                $result = false;
                 try {
                     $result = $dbUpdates->applyScript($hash, $details['down'], $details);
                 } catch (\Exception $e) {
