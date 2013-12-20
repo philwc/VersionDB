@@ -136,7 +136,7 @@ class DB
     public function runNative(){
         $filename = '/tmp/'.uniqid().'.sql';
         file_put_contents($filename, $this->sql);
-        $cmd = "mysql -u{$this->user} -p{$this->password} -h{$this->host} {$this->database} < $filename";
+        $cmd = "mysql -u{$this->user} -p{$this->password} -h{$this->host} {$this->db} < $filename";
 
         $output = array();
         $return = 0;
