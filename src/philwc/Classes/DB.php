@@ -130,6 +130,23 @@ class DB
     }
 
     /**
+     * Run Native
+     * @return int
+     */
+    public function runNative(){
+        $filename = '/tmp/'.uniqid().'.sql';
+        file_put_contents($filename, $this->sql);
+        $cmd = "mysql -u{$this->user} -p{$this->password} -h{$this->host} {$this->database} < $filename";
+
+        $output = array();
+        $return = 0;
+
+        exec($cmd, $output, $return);
+
+        return $return;
+    }
+
+    /**
      * Show Query
      *
      * @return string

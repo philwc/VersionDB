@@ -29,6 +29,7 @@ class DBUpdates
 
     /**
      * Check if the changelog table exists, create if not.
+     *
      * @return boolean
      */
     private function checkCreateTable()
@@ -36,8 +37,10 @@ class DBUpdates
         $this->db->setSql('SELECT 1 FROM ' . $this->changelogTable . ' LIMIT 1');
 
         if ($this->db->run() === false) {
-            $this->db->setSql('CREATE TABLE `' . $this->changelogTable . '` (`id` varchar(255) DEFAULT NULL, `down` varchar(255) DEFAULT NULL, `date` datetime DEFAULT NULL,
-                `author` varchar(255) DEFAULT NULL, `description` text, PRIMARY KEY (id)) ENGINE=InnoDB DEFAULT CHARSET=latin1');
+            $this->db->setSql(
+                     'CREATE TABLE `' . $this->changelogTable . '` (`id` varchar(255) DEFAULT NULL, `down` varchar(255) DEFAULT NULL, `date` datetime DEFAULT NULL,
+                `author` varchar(255) DEFAULT NULL, `description` text, PRIMARY KEY (id)) ENGINE=InnoDB DEFAULT CHARSET=latin1'
+            );
 
             return $this->db->run() !== false;
         } else {
@@ -47,6 +50,7 @@ class DBUpdates
 
     /**
      * Add Change Record
+     *
      * @param string    $hash
      * @param string    $down
      * @param \DateTime $date
@@ -55,27 +59,29 @@ class DBUpdates
      *
      * @return boolean
      */
-    private function addRecord($hash, $down, \DateTime $date, $author, $description)
+    private function addRecord( $hash, $down, \DateTime $date, $author, $description )
     {
-        $result = $this->db
-            ->setSql('SELECT id FROM ' . $this->changelogTable . ' WHERE id=:hash')
-            ->setParameter(
-                array(
-                    'hash' => $hash
-                )
+        $result = $this->db->setSql('SELECT id FROM ' . $this->changelogTable . ' WHERE id=:hash')
+                           ->setParameter(
+                           array(
+                                'hash' => $hash
+                           )
             )
-            ->run();
+                           ->run();
 
         if ($result === false || $result->rowCount() == 0) {
-            $this->db
-                ->setSql('INSERT INTO ' . $this->changelogTable . ' VALUES (:hash, :down, :date, :author, :description)')
-                ->setParameter(array(
-                    'hash'        => $hash,
-                    'down'        => $down,
-                    'date'        => $date->format('Y-m-d H:i:s'),
-                    'author'      => $author,
-                    'description' => $description,
-            ));
+            $this->db->setSql(
+                     'INSERT INTO ' . $this->changelogTable . ' VALUES (:hash, :down, :date, :author, :description)'
+                )
+                     ->setParameter(
+                     array(
+                          'hash'        => $hash,
+                          'down'        => $down,
+                          'date'        => $date->format('Y-m-d H:i:s'),
+                          'author'      => $author,
+                          'description' => $description,
+                     )
+                );
 
             return $this->db->run() !== false;
         } else {
@@ -85,24 +91,26 @@ class DBUpdates
 
     /**
      * Remove Record
+     *
      * @param type $hash
      *
      * @return type
      */
-    private function removeRecord($hash)
+    private function removeRecord( $hash )
     {
-        $this->db
-            ->setSql('DELETE FROM ' . $this->changelogTable . ' WHERE id=:hash OR down=:hash')
-            ->setParameter(
-                array(
-                    'hash' => $hash
-        ));
+        $this->db->setSql('DELETE FROM ' . $this->changelogTable . ' WHERE id=:hash OR down=:hash')
+                 ->setParameter(
+                 array(
+                      'hash' => $hash
+                 )
+            );
 
         return $this->db->run() !== false;
     }
 
     /**
      * Apply Script
+     *
      * @param string $hash
      * @param string $down
      * @param array  $details
@@ -110,22 +118,48 @@ class DBUpdates
      * @return boolean
      * @throws \Exception
      */
-    public function applyScript($hash, $down, array $details)
+    public function applyScript( $hash, $down, array $details )
     {
         $sql = file_get_contents($details['file']);
 
-        $result = $this->db->setSql($sql)->run();
+        $result = $this->db->setSql($sql)
+                           ->run();
 
         if ($result !== false) {
-            if ($down === true) {
-                return $this->removeRecord($hash);
-            } else {
-                return $this
-                        ->addRecord(
-                            $hash, $down, $details['date'], $details['author'], $details['description']);
-            }
+            $this->updateRecord($down, $hash, $details);
         } else {
-            throw new \Exception('Failed applying update script: ' . "\n" . $details['file'] . "\n\n" . $sql . "\n\n" . $this->db->getLastError());
+
+            $nativeResult = $this->db->runNative();
+            if ($nativeResult == 0) {
+                $this->updateRecord($down, $hash, $details);
+            } else {
+                throw new \Exception('Failed applying update script: ' . "\n" . $details['file'] . "\n\n" . $sql . "\n\n" . $this->db->getLastError(
+                    ));
+            }
+        }
+    }
+
+    /**
+     * Update Record
+     *
+     * @param string $down
+     * @param string $hash
+     * @param array  $details
+     *
+     * @return bool
+     */
+    private function updateRecord( $down, $hash, array $details )
+    {
+        if ($down === true) {
+            return $this->removeRecord($hash);
+        } else {
+            return $this->addRecord(
+                        $hash,
+                            $down,
+                            $details['date'],
+                            $details['author'],
+                            $details['description']
+                );
         }
     }
 
@@ -136,25 +170,23 @@ class DBUpdates
      *
      * @return array
      */
-    public function getExistingHashes($small = true)
+    public function getExistingHashes( $small = true )
     {
         if ($small) {
-            $result = $this->db
-                ->setSql('SELECT id FROM ' . $this->changelogTable)
-                ->run();
+            $result = $this->db->setSql('SELECT id FROM ' . $this->changelogTable)
+                               ->run();
 
             $hashes = array();
-            while ($row    = $result->fetch()) {
+            while ($row = $result->fetch()) {
                 $hashes[] = $row['id'];
             }
         } else {
-            $result = $this->db
-                ->setSql('SELECT * FROM ' . $this->changelogTable)
-                ->run();
+            $result = $this->db->setSql('SELECT * FROM ' . $this->changelogTable)
+                               ->run();
 
             $hashes = array();
             $i      = 1;
-            while ($row    = $result->fetch()) {
+            while ($row = $result->fetch()) {
                 $hash = array();
                 foreach ($row as $key => $value) {
                     $hash[$key] = $value;
